@@ -1,9 +1,11 @@
 import re
 import sys
 from collections import Counter
+from logbase import criar_banco, salvar_falha, listar_eventos
 
 PADRAO_FALHA = re.compile(
-    r"Failed password for (?:invalid user )?(?P<usuario>\S+) "
+    r"^(?P<timestamp>\w{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+"
+    r".*Failed password for (?:invalid user )?(?P<usuario>\S+) "
     r"from (?P<ip>\d+\.\d+\.\d+\.\d+)"
 )
 
@@ -16,6 +18,7 @@ def analisar(caminho):
 
             if resultado:
                 falhas.append({
+                    "timestamp": resultado.group("timestamp"),
                     "usuario": resultado.group("usuario"),
                     "ip": resultado.group("ip"),
                     "linha": linha.strip(),
@@ -36,10 +39,27 @@ def main():
     print(f"Tentativas de login falhas: {len(falhas)}")
 
     for falha in falhas:
-        print(f"- Usuario: {falha['usuario']} | IP: {falha['ip']}")
+         print(
+            f"- Data: {falha['timestamp']} | "
+            f"Usuario: {falha['usuario']} | "
+            f"IP: {falha['ip']}"
+        )
 
     print("\nIPs com mais tentativas de falhas: ")
     for ip, total in top_ips(falhas):
         print(f"- {ip}: {total} tentativa(s)")
+
+    if falhas:
+        conexao = criar_banco()
+
+        for falha in falhas:
+            salvar_falha(conexao, falha)
+
+        print("\nEventos salvos no banco: ")
+        for evento in listar_eventos(conexao):
+            print(evento)
+        conexao.close()
+
+    
 if __name__ == "__main__":
     main()
