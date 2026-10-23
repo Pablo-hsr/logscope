@@ -1,0 +1,4 @@
+Oct 21 08:12:03 meu-pc sshd[1234]: Failed password for root from 203.0.113.45 port 54321 ssh2
+Oct 21 08:12:10 meu-pc sshd[1234]: Failed password for root from 203.0.113.45 port 54322 ssh2
+Oct 21 08:12:18 meu-pc sshd[1234]: Failed password for invalid user admin from 198.51.100.22 port 54330 ssh2
+Oct 21 09:01:44 meu-pc sshd[1300]: Accepted publickey for pablo from 192.168.0.10 port 55000 ssh2
